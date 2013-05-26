@@ -138,7 +138,7 @@ public class RequestFuture<T> implements Future<T>, Response.Listener<T>,
     }
 
     @Override
-    public synchronized void onResponse(T response) {
+    public synchronized void onResponse(T response, boolean hasChanged) {
         mResultReceived = true;
         mResult = response;
         notifyAll();
