@@ -1,9 +1,12 @@
-/**
- * Copyright (C) 2013 The Android Open Source Project
+/*
+ * Copyright (C) 2011 The Android Open Source Project
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,9 +24,9 @@ import android.widget.ImageView;
 
 import com.android.volleyextended.Request;
 import com.android.volleyextended.RequestQueue;
-import com.android.volleyextended.VolleyError;
 import com.android.volleyextended.Response.ErrorListener;
 import com.android.volleyextended.Response.Listener;
+import com.android.volleyextended.VolleyError;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -131,15 +134,20 @@ public class ImageLoader {
 
 
   /**
+   * <p>
    * Interface for the response handlers on image requests.
+   * </p>
+   * <p>
    * The call flow is this:
-   * 1. Upon being attached to a request, onResponse(response, true) will
-   * be invoked to reflect any cached data that was already available. If the
-   * data was available, response.getBitmap() will be non-null.
-   * 2. After a network response returns, only one of the following cases will happen:
-   * - onResponse(response, false) will be called if the image was loaded.
-   * or
-   * - onErrorResponse will be called if there was an error loading the image.
+   * <ol>
+   * <li>Upon being attached to a request, onResponse(response, true) will be invoked to reflect any cached data that was already available. If the
+   * data was available, response.getBitmap() will be non-null.</li>
+   * <li>After a network response returns, only one of the following cases will happen:
+   * <ul>
+   * <li>onResponse(response, false) will be called if the image was loaded.</li> or
+   * <li>onErrorResponse will be called if there was an error loading the image.</li></li></ul>
+   * </ol>
+   * </p>
    */
   public interface ImageListener extends ErrorListener<ImageContainer> {
 
