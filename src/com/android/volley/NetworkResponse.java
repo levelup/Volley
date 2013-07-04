@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,47 +14,27 @@
  * limitations under the License.
  */
 
-
 package com.android.volley;
-
-import java.util.Map;
 
 import org.apache.http.HttpStatus;
 
+import java.util.Collections;
+import java.util.Map;
+
 /**
- * <p>
- * Data and headers returned from {@link Network#performRequest(Request)} or
- * from {@link CacheDispatcher}.
- * </p>
- * <p>
- * The response can have 3 states:
- * <dl>
- * <dt><code>notModified = false</code> and <code>cached = false</code></dt>
- * <dd>completely new response</dd>
- * <dt><code>notModified = false</code> and <code>cached = true</code></dt>
- * <dd>previously cached response, not expired (response comes from cache, no
- * internet access)</dd>
- * <dt><code>notModified = true</code> and <code>cached = true</code></dt>
- * <dd>previously cached response, expired but not modified (HTTP 304) (response
- * comes from cache but was verified through internet access)</dd>
- * </dl>
- * </p>
+ * Data and headers returned from {@link Network#performRequest(Request)}.
  */
 public class NetworkResponse {
-
     /**
      * Creates a new network response.
-     * 
      * @param statusCode the HTTP status code
      * @param data Response body
      * @param headers Headers returned with this response, or null for none
-     * @param notModified True if the server returned a 304 and the data was
-     *            already in cache
+     * @param notModified True if the server returned a 304 and the data was already in cache
      * @param cached True if the response comes from cache
      */
     public NetworkResponse(int statusCode, byte[] data, Map<String, String> headers,
             boolean notModified, boolean cached) {
-
         this.statusCode = statusCode;
         this.data = data;
         this.headers = headers;
@@ -62,8 +42,11 @@ public class NetworkResponse {
         this.cached = cached;
     }
 
-    public NetworkResponse(byte[] data, Map<String, String> headers, boolean cached) {
+    public NetworkResponse(byte[] data) {
+        this(HttpStatus.SC_OK, data, Collections.<String, String>emptyMap(), false, false);
+    }
 
+    public NetworkResponse(byte[] data, Map<String, String> headers, boolean cached) {
         this(HttpStatus.SC_OK, data, headers, false, cached);
     }
 
@@ -80,5 +63,5 @@ public class NetworkResponse {
     public final boolean notModified;
 
     /** True if the response comes from cache. */
-    public final boolean cached;
+    public final boolean             cached;
 }

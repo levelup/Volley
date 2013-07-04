@@ -95,7 +95,7 @@ public class ExecutorDelivery implements ResponseDelivery {
             }
 
             // Deliver a normal response or error, depending.
-            if (mResponse.isSuccess()) { 
+            if (mResponse.isSuccess()) {
                 mRequest.deliverResponse(mResponse.result, mResponse.hasChanged);
             } else {
                 mRequest.deliverError(mResponse.error);

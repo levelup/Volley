@@ -62,7 +62,7 @@ public class Response<T> {
 
     /** True if this response has changed since the last request. */
     public boolean hasChanged = true;
-    
+
     /** True if this response was a soft-expired one and a second one MAY be coming. */
     public boolean intermediate = false;
 
