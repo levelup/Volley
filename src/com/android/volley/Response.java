@@ -26,7 +26,7 @@ public class Response<T> {
     /** Callback interface for delivering parsed responses. */
     public interface Listener<T> {
         /** Called when a response is received. */
-        public void onResponse(T response);
+        public void onResponse(T response, boolean hasChanged);
     }
 
     /** Callback interface for delivering error responses. */
@@ -59,6 +59,9 @@ public class Response<T> {
 
     /** Detailed error information if <code>errorCode != OK</code>. */
     public final VolleyError error;
+
+    /** True if this response has changed since the last request. */
+    public boolean hasChanged = true;
 
     /** True if this response was a soft-expired one and a second one MAY be coming. */
     public boolean intermediate = false;

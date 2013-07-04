@@ -56,8 +56,8 @@ public class StringRequest extends Request<String> {
     }
 
     @Override
-    protected void deliverResponse(String response) {
-        mListener.onResponse(response);
+    protected void deliverResponse(String response, boolean hasChanged) {
+        mListener.onResponse(response, hasChanged);
     }
 
     @Override
