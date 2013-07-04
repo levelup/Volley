@@ -42,7 +42,7 @@ public class HttpHeaderParserTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         headers = new HashMap<String, String>();
-        response = new NetworkResponse(0, null, headers, false);
+        response = new NetworkResponse(0, null, headers, false, false);
     }
 
     public void testParseCacheHeaders_noHeaders() {
