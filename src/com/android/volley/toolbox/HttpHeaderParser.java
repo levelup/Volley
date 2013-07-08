@@ -50,12 +50,12 @@ public class HttpHeaderParser {
         String serverEtag = null;
         String headerValue;
 
-        headerValue = headers.get("Date");
+        headerValue = headers.get("date");
         if (headerValue != null) {
             serverDate = parseDateAsEpoch(headerValue);
         }
 
-        headerValue = headers.get("Cache-Control");
+        headerValue = headers.get("cache-control");
         if (headerValue != null) {
             hasCacheControl = true;
             String[] tokens = headerValue.split(",");
@@ -74,12 +74,12 @@ public class HttpHeaderParser {
             }
         }
 
-        headerValue = headers.get("Expires");
+        headerValue = headers.get("expires");
         if (headerValue != null) {
             serverExpires = parseDateAsEpoch(headerValue);
         }
 
-        serverEtag = headers.get("ETag");
+        serverEtag = headers.get("etag");
 
         // Cache-Control takes precedence over an Expires header, even if both exist and Expires
         // is more restrictive.
@@ -119,7 +119,7 @@ public class HttpHeaderParser {
      * or the HTTP default (ISO-8859-1) if none can be found.
      */
     public static String parseCharset(Map<String, String> headers) {
-        String contentType = headers.get(HTTP.CONTENT_TYPE);
+        String contentType = headers.get("content-type");
         if (contentType != null) {
             String[] params = contentType.split(";");
             for (int i = 1; i < params.length; i++) {

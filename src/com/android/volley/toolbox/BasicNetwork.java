@@ -45,6 +45,7 @@ import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -233,7 +234,7 @@ public class BasicNetwork implements Network {
     private static Map<String, String> convertHeaders(Header[] headers) {
         Map<String, String> result = new HashMap<String, String>();
         for (int i = 0; i < headers.length; i++) {
-            result.put(headers[i].getName(), headers[i].getValue());
+            result.put(headers[i].getName().toLowerCase(Locale.ENGLISH), headers[i].getValue());
         }
         return result;
     }
