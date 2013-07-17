@@ -153,6 +153,17 @@ public class ImageLoader {
     public boolean isCached(String requestUrl, int maxWidth, int maxHeight) {
         throwIfNotOnMainThread();
 
+        return isCachedFromAnyThread(requestUrl, maxWidth, maxHeight);
+    }
+
+    /**
+     * Similar to {@link #isCached(String, int, int)} but can be called from any thread
+     * @param requestUrl
+     * @param maxWidth
+     * @param maxHeight
+     * @return True if the item exists in cache, false otherwise.
+     */
+    public boolean isCachedFromAnyThread(String requestUrl, int maxWidth, int maxHeight) {
         String cacheKey = getCacheKey(requestUrl, maxWidth, maxHeight);
         return mCache.getBitmap(cacheKey) != null;
     }
@@ -187,6 +198,20 @@ public class ImageLoader {
             int maxWidth, int maxHeight) {
         // only fulfill requests that were initiated from the main thread.
         throwIfNotOnMainThread();
+        return getFromAnyThread(requestUrl, imageListener, maxWidth, maxHeight);
+    }
+
+    /**
+     * Similar to {@link #get(String, ImageListener, int, int)} but can be called from any thread
+     * @param requestUrl
+     * @param imageListener
+     * @param maxWidth
+     * @param maxHeight
+     * @return A container object that contains all of the properties of the request, as well as
+     *     the currently available image (default if remote is not loaded).
+     */
+    public ImageContainer getFromAnyThread(String requestUrl, ImageListener imageListener,
+            int maxWidth, int maxHeight) {
 
         final String cacheKey = getCacheKey(requestUrl, maxWidth, maxHeight);
 
