@@ -50,6 +50,9 @@ public class ImageLoader {
     /** The cache implementation to be used as an L1 cache before calling into volley. */
     private final ImageCache mCache;
 
+    /** The factory to build the {@link ImageContainer}s used to cancel running jobs. */
+    private final ImageContainerFactory<?> mContainerFactory;
+
     /**
      * HashMap of Cache keys -> BatchedImageRequest used to track in-flight requests so
      * that we can coalesce multiple requests to the same URL into a single network request.
@@ -78,13 +81,30 @@ public class ImageLoader {
     }
 
     /**
+     * Interface to create the {@link ImageContainer} objects used to cancel jobs if necessary
+     */
+    public interface ImageContainerFactory<C extends ImageContainer> {
+        C getImageContainer(ImageLoader imageLoader, Bitmap bitmap, String requestUrl, String cacheKey, ImageListener listener);
+    }
+
+    /**
      * Constructs a new ImageLoader.
      * @param queue The RequestQueue to use for making image requests.
      * @param imageCache The cache to use as an L1 cache.
+     * @param imageContainerFactory The factory to create {@link ImageContainer} used to cancel jobs, null to use the default implementation
      */
-    public ImageLoader(RequestQueue queue, ImageCache imageCache) {
+    public ImageLoader(RequestQueue queue, ImageCache imageCache, ImageContainerFactory<?> imageContainerFactory) {
         mRequestQueue = queue;
         mCache = imageCache;
+        if (null==imageContainerFactory) {
+            imageContainerFactory = new ImageContainerFactory<ImageContainer>() {
+                @Override
+                public ImageContainer getImageContainer(ImageLoader imageLoader, Bitmap bitmap, String requestUrl, String cacheKey, ImageListener listener) {
+                    return new ImageContainer(imageLoader, bitmap, requestUrl, cacheKey, listener);
+                }
+            };
+        }
+        mContainerFactory = imageContainerFactory;
     }
 
     /**
@@ -219,14 +239,14 @@ public class ImageLoader {
         Bitmap cachedBitmap = mCache.getBitmap(cacheKey);
         if (cachedBitmap != null) {
             // Return the cached bitmap.
-            ImageContainer container = new ImageContainer(cachedBitmap, requestUrl, null, null);
+            ImageContainer container = mContainerFactory.getImageContainer(this, cachedBitmap, requestUrl, null, null);
             imageListener.onResponse(container, true);
             return container;
         }
 
         // The bitmap did not exist in the cache, fetch it!
         ImageContainer imageContainer =
-                new ImageContainer(null, requestUrl, cacheKey, imageListener);
+                mContainerFactory.getImageContainer(this, null, requestUrl, cacheKey, imageListener);
 
         // Update the caller to let them know that they should use the default bitmap.
         imageListener.onResponse(imageContainer, true);
@@ -309,76 +329,22 @@ public class ImageLoader {
         }
     }
 
-    /**
-     * Container object for all of the data surrounding an image request.
-     */
-    public class ImageContainer {
-        /**
-         * The most relevant bitmap for the container. If the image was in cache, the
-         * Holder to use for the final bitmap (the one that pairs to the requested URL).
-         */
-        private Bitmap mBitmap;
-
-        private final ImageListener mListener;
-
-        /** The cache key that was associated with the request */
-        private final String mCacheKey;
-
-        /** The request URL that was specified */
-        private final String mRequestUrl;
-
-        /**
-         * Constructs a BitmapContainer object.
-         * @param bitmap The final bitmap (if it exists).
-         * @param requestUrl The requested URL for this container.
-         * @param cacheKey The cache key that identifies the requested URL for this container.
-         */
-        public ImageContainer(Bitmap bitmap, String requestUrl,
-                String cacheKey, ImageListener listener) {
-            mBitmap = bitmap;
-            mRequestUrl = requestUrl;
-            mCacheKey = cacheKey;
-            mListener = listener;
-        }
-
-        /**
-         * Releases interest in the in-flight request (and cancels it if no one else is listening).
-         */
-        public void cancelRequest() {
-            if (mListener == null) {
-                return;
+    void cancelRequest(ImageContainer container) {
+        BatchedImageRequest request = mInFlightRequests.get(container.getCacheKey());
+        if (request != null) {
+            boolean canceled = request.removeContainerAndCancelIfNecessary(container);
+            if (canceled) {
+                mInFlightRequests.remove(container.getCacheKey());
             }
-
-            BatchedImageRequest request = mInFlightRequests.get(mCacheKey);
+        } else {
+            // check to see if it is already batched for delivery.
+            request = mBatchedResponses.get(container.getCacheKey());
             if (request != null) {
-                boolean canceled = request.removeContainerAndCancelIfNecessary(this);
-                if (canceled) {
-                    mInFlightRequests.remove(mCacheKey);
-                }
-            } else {
-                // check to see if it is already batched for delivery.
-                request = mBatchedResponses.get(mCacheKey);
-                if (request != null) {
-                    request.removeContainerAndCancelIfNecessary(this);
-                    if (request.mContainers.size() == 0) {
-                        mBatchedResponses.remove(mCacheKey);
-                    }
+                request.removeContainerAndCancelIfNecessary(container);
+                if (request.mContainers.size() == 0) {
+                    mBatchedResponses.remove(container.getCacheKey());
                 }
             }
-        }
-
-        /**
-         * Returns the bitmap associated with the request URL if it has been loaded, null otherwise.
-         */
-        public Bitmap getBitmap() {
-            return mBitmap;
-        }
-
-        /**
-         * Returns the requested URL for this container.
-         */
-        public String getRequestUrl() {
-            return mRequestUrl;
         }
     }
 
