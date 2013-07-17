@@ -442,12 +442,15 @@ public class ImageLoader {
                             // after the response was received but before it was delivered,
                             // skip them.
                             if (container.mListener == null) {
+                                container.mBitmap = null;
                                 continue;
                             }
                             if (bir.getError() == null) {
                                 container.mBitmap = bir.mResponseBitmap;
                                 container.mListener.onResponse(container, false);
+                                container.mBitmap = null;
                             } else {
+                                container.mBitmap = null;
                                 container.mListener.onErrorResponse(bir.getError());
                             }
                         }
