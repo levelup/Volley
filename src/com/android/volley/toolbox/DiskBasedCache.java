@@ -265,6 +265,9 @@ public class DiskBasedCache implements Cache {
             boolean deleted = getFileForKey(e.key).delete();
             if (deleted) {
                 mTotalSize -= e.size;
+                if (VolleyLog.DEBUG) {
+                    VolleyLog.v("Pruning deleted "+e.key);
+                }
             } else {
                VolleyLog.d("Could not delete cache entry for key=%s, filename=%s",
                        e.key, getFilenameForKey(e.key));
