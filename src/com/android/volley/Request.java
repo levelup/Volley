@@ -537,7 +537,7 @@ public abstract class Request<T> implements Comparable<Request<T>> {
     @Override
     public String toString() {
         String trafficStatsTag = "0x" + Integer.toHexString(getTrafficStatsTag());
-        return (mCanceled ? "[X] " : "[ ] ") + getUrl() + " " + trafficStatsTag + " "
-                + getPriority() + " " + mSequence;
+        return (mCanceled ? "[X] " : "[ ] ") + getUrl() + ' ' + trafficStatsTag + ' '
+                + getPriority() + ' ' + mSequence;
     }
 }
