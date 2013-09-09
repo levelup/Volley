@@ -526,6 +526,7 @@ public class DiskBasedCache implements Cache {
 
     static String readString(InputStream is) throws IOException {
         int n = (int) readLong(is);
+        if (n<0) throw new IOException("Found negative size");
         byte[] b = streamToBytes(is, n);
         return new String(b, "UTF-8");
     }
