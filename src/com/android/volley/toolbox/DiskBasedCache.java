@@ -319,7 +319,12 @@ public class DiskBasedCache implements Cache {
         if (length<0) {
             throw new IOException("Negative byte array length " + length);
         }
-        byte[] bytes = new byte[length];
+        byte[] bytes;
+        try {
+            bytes = new byte[length];
+        } catch (OutOfMemoryError e) {
+            throw new OutOfMemoryError(e.getMessage() + " failed to allocate "+length);
+        }
         int count;
         int pos = 0;
         while (pos < length && ((count = in.read(bytes, pos, length - pos)) != -1)) {
