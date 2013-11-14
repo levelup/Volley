@@ -90,4 +90,9 @@ public class PoolingByteArrayOutputStream extends ByteArrayOutputStream {
         expand(1);
         super.write(oneByte);
     }
+    
+    @Override
+    public synchronized byte[] toByteArray() {
+        return buf;
+    }
 }
