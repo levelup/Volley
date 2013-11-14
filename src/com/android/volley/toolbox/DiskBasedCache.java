@@ -316,6 +316,9 @@ public class DiskBasedCache implements Cache {
      * Reads the contents of an InputStream into a byte[].
      * */
     private static byte[] streamToBytes(InputStream in, int length) throws IOException {
+        if (length<0) {
+            throw new IOException("Negative byte array length " + length);
+        }
         byte[] bytes = new byte[length];
         int count;
         int pos = 0;
