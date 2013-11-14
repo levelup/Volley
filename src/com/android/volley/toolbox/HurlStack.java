@@ -164,7 +164,7 @@ public class HurlStack implements HttpStack {
         int timeoutMs = request.getTimeoutMs();
         connection.setConnectTimeout(timeoutMs);
         connection.setReadTimeout(timeoutMs);
-        connection.setUseCaches(false);
+        //connection.setUseCaches(false);
         connection.setDoInput(true);
 
         // use caller-provided custom SslSocketFactory, if any, for HTTPS
